@@ -1,0 +1,22 @@
+# delay for renewing IP from ISP
+:delay 15;
+
+# define date and time vars
+:local date [/sys clock get date];
+:local time [/sys clock get time];
+
+# your text in SMS
+:local text "MT is UP at $date $time";
+
+# you token from turbosms.ua
+:local token "YOUR_TOKEN";
+
+# you sender (alias)
+:local sender "E-Svitlo";
+
+# you phone number (like 380501234567)
+:local number "380...";
+
+:local url "https://api.turbosms.ua/message/send.json?recipients[0]=$number&sms[sender]=$sender&sms[text]=$text&token=$token";
+/tool fetch url=$url keep-result=yes;
+:log info "Script SMS executed";
