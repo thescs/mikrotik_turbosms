@@ -1,22 +1,25 @@
-# delay for renewing IP from ISP
-:delay 15;
-
-# define date and time vars
 :local date [/sys clock get date];
 :local time [/sys clock get time];
-
-# your text in SMS
 :local text "MT is UP at $date $time";
-
-# you token from turbosms.ua
-:local token "YOUR_TOKEN";
-
-# you sender (alias)
-:local sender "E-Svitlo";
-
-# you phone number (like 380501234567)
+# TurboSMS token
+:local token "";
+# TurboSMS alfa-name
+:local sender "";
+# Phone number
 :local number "380...";
-
 :local url "https://api.turbosms.ua/message/send.json?recipients[0]=$number&sms[sender]=$sender&sms[text]=$text&token=$token";
-/tool fetch url=$url keep-result=yes;
-:log info "Script SMS executed";
+
+:do {
+    :local internetUp [/ping 8.8.8.8 count=1];
+
+    # Checking access to Internet
+    :if ($internetUp = 1) do={
+        /tool fetch url=$url output=user;
+        :log info "Script SMS executed";
+        :return 0;
+    } else={
+        :log info "No internet access. Retrying in 10 seconds...";
+        :delay 10;
+    }
+} while (true);
+
